@@ -859,7 +859,8 @@ function load(){
 function fmtMs(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`}
 function fmtMin(m){if(!m||m<=0)return'0m';const h=Math.floor(m/60),mn=m%60;if(h>0&&mn>0)return`${h}h ${mn}m`;if(h>0)return`${h}h`;return`${mn}m`}
 function fmtH(m){return(m/60).toFixed(1)+'h'}
-function today(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function localDate(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function today(){return localDate(new Date())}
 function fmtTime(d){return d?new Date(d).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}):'--:--'}
 function fmtDateShort(s){return new Date(s+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'})}
 function catColor(c){const i=S.categories.indexOf(c);return COLORS[i%COLORS.length]||'#5c7fa0'}
@@ -1074,8 +1075,8 @@ function exportCSV(){
 }
 
 /* SEMANA */
-function getMon(off=0){const d=new Date();const dy=d.getDay();const diff=(dy+6)%7;d.setDate(d.getDate()-diff+off*7);return d.toISOString().split('T')[0];}
-function getWeekDays(mon){const days=[];for(let i=0;i<7;i++){const d=new Date(mon+'T00:00:00');d.setDate(d.getDate()+i);days.push(d.toISOString().split('T')[0]);}return days;}
+function getMon(off=0){const d=new Date();const dy=d.getDay();const diff=(dy+6)%7;d.setDate(d.getDate()-diff+off*7);return localDate(d);}
+function getWeekDays(mon){const days=[];for(let i=0;i<7;i++){const d=new Date(mon+'T00:00:00');d.setDate(d.getDate()+i);days.push(localDate(d));}return days;}
 function shiftW(d){weekOffset+=d;renderSemana();}
 function renderSemana(){
   const mon=getMon(weekOffset);const days=getWeekDays(mon);
@@ -1109,7 +1110,7 @@ function getRange(range){
   const n=new Date(),d=today();
   if(range==='today')return[d,d];
   if(range==='week'){const m=getMon(0);return[m,getWeekDays(m)[6]];}
-  if(range==='month')return[new Date(n.getFullYear(),n.getMonth(),1).toISOString().split('T')[0],d];
+  if(range==='month')return[localDate(new Date(n.getFullYear(),n.getMonth(),1)),d];
   return['0000-00-00',d];
 }
 function rResumen(){
@@ -1237,7 +1238,7 @@ function renderHeatmap(){
   const end=new Date();end.setHours(0,0,0,0);
   const dow=end.getDay();end.setDate(end.getDate()+(6-dow));
   const cells=[];
-  for(let i=TOTAL-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);cells.push(d.toISOString().split('T')[0]);}
+  for(let i=TOTAL-1;i>=0;i--){const d=new Date(end);d.setDate(end.getDate()-i);cells.push(localDate(d));}
   const mbd={};S.entries.forEach(e=>{mbd[e.date]=(mbd[e.date]||0)+e.minutes;});
   const maxM=Math.max(...Object.values(mbd),60);
   const heat=['rgba(255,255,255,.05)','rgba(45,127,249,.2)','rgba(45,127,249,.45)','rgba(0,212,160,.5)','rgba(0,212,160,.9)'];
