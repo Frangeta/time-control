@@ -859,7 +859,7 @@ function load(){
 function fmtMs(ms){const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sc).padStart(2,'0')}`}
 function fmtMin(m){if(!m||m<=0)return'0m';const h=Math.floor(m/60),mn=m%60;if(h>0&&mn>0)return`${h}h ${mn}m`;if(h>0)return`${h}h`;return`${mn}m`}
 function fmtH(m){return(m/60).toFixed(1)+'h'}
-function today(){return new Date().toISOString().split('T')[0]}
+function today(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function fmtTime(d){return d?new Date(d).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}):'--:--'}
 function fmtDateShort(s){return new Date(s+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'})}
 function catColor(c){const i=S.categories.indexOf(c);return COLORS[i%COLORS.length]||'#5c7fa0'}
@@ -1027,6 +1027,7 @@ function addM(){
   if(min<=0){msg.style.color='var(--red)';msg.textContent='⚠ Introduce una duración o rango.';return;}
   S.entries.push({id:Date.now(),date,task,cat,minutes:min,startWall:sw,endWall:ew});
   ['m-task','m-h','m-min','m-start','m-end'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-date').value=today();
   msg.style.color='var(--green)';msg.textContent='✓ Entrada añadida correctamente.';
   setTimeout(()=>msg.textContent='',2500);
   save();renderAll();
